@@ -3,7 +3,7 @@
 # Path to the PWM control file (ex. /sys/class/hwmon/hwmon2/pwm2)
 pwm_path="pwm"
 
-# Path to the CSV configuration file (ex. /home/user/.config/nvfanconf/fan_curve.csv)
+# Path to the CSV configuration file (ex. /home/user/.config/nvfanconf)
 config_path="conf"
 
 if [ $pwm_path == "pwm" ]; then
