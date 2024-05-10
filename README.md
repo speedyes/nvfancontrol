@@ -26,3 +26,10 @@ This thing can control any fan connected to your motherboard based on your NVIDI
 - Both scripts are pretty portable so put them where you want
 - I recommend enabling 'nvfancontrol.sh' as a service, so it runs every time your system boots
 - If you want to make your graph a bit more detailed then you can edit config file directly with any editor. First column is desired temperature and second is fan speed in PWM (ex. 40,110)
+
+# TODO:
+- [ ] Make the configurator reserve lines for itself and clear them when screen update occurs
+- [ ] Implement nouveau support
+- [ ] Make some changes to the script for smooth fan changes
+- [ ] Make the configurator more user-friendly (options selectable by arrow keys etc.)
+- [ ] Maybe a basic GUI? I'm not sure about that one but it's what I would like to make in the future 
