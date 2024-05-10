@@ -29,7 +29,6 @@ This thing can control any fan connected to your motherboard based on your NVIDI
 
 # TODO:
 - [ ] Make the configurator reserve lines for itself and clear them when screen update occurs
-- [ ] Implement nouveau support
 - [ ] Make some changes to the script for smooth fan changes
 - [ ] Make the configurator more user-friendly (options selectable by arrow keys etc.)
 - [ ] Maybe a basic GUI? I'm not sure about that one but it's what I would like to make in the future 
