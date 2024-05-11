@@ -4,8 +4,8 @@
 config_path=""
 config_csv=""
 config_plot=""
-pwm_path=""
-config_path=""
+pwm_path="n"
+config_path="n"
 hwmon="/sys/class/hwmon"
 fan_good="n"
 steps=0
@@ -15,8 +15,16 @@ sudo=0
 
 # Main function that controls fan(s)
 fan_control() {
-    if [ sudo != 1 ]; then
+    if (( $sudo == 0 )); then
         echo "Please run with root privileges!"
+        exit 1
+    fi
+
+    if [ $pwm_path = "n" ]; then
+        echo "pwm_path not found."
+        exit 1
+    elif [ $config_path = "n" ]; then
+        echo "config_path not found."
         exit 1
     fi
 
