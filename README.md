@@ -20,7 +20,11 @@ This thing can control any fan connected to your motherboard based on your NVIDI
 # First use:
 - Make sure you have necesarry driver installed for your super-io chip (run 'sensors-detect' and 'sensors', and check if you have 'fan x' followed by RPM value)
 - Make sure you know where in the filesystem resides your pwm fan (pwmconfig can detect it, ex. /sys/class/hwmon/hwmon1/pwm1)
-- Run the configurator first, then open the main script and replace 'none' with things explained in the comments 
+- Run the configurator first, then open the main script and replace 'none' with things explained in the comments
+
+# Usage:
+- Just run the script with sudo
+- Configurator is now run with '-c' switch. It can be run both with sudo an without just as earlier
 
 # Tips:
 - Both scripts are pretty portable so put them where you want
