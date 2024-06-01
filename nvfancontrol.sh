@@ -4,10 +4,12 @@
 config_path=""
 config_csv=""
 config_plot=""
-pwm_path="n"
+config_var="config.cfg"
+pwm="n"
 config_path="n"
 hwmon="/sys/class/hwmon"
 fan_good="n"
+cfg=0
 steps=0
 sudo=0
 
@@ -20,7 +22,13 @@ fan_control() {
         exit 1
     fi
 
-    if [ $pwm_path = "n" ]; then
+    source config.cfg
+
+    config_path="$user_home/.config/nvfancontrol"
+    config_csv="$config_path/fan_curve.csv"
+    user_name=${user_home##*/}
+
+    if [ $pwm = "n" ]; then
         echo "pwm_path not found."
         exit 1
     elif [ $config_path = "n" ]; then
@@ -31,18 +39,18 @@ fan_control() {
     # Get PWM value based on temperature
     get_pwm_value() {
         local temp=$1
-        while IFS=, read -r threshold pwm; do
+        while IFS=, read -r threshold pwm1; do
             if (( temp <= threshold )); then
-                echo $pwm
+                echo $pwm1
                 return
             fi
-        done < "$config_path/fan_curve.csv"
+        done < "$config_csv"
         echo 0 # Default to 0 if no match found
     }
 
     while true; do
-        # Ensure that the fan is in manual mode (controlled by software, not firmware)
-        echo 1 > "$pwm_path"_enable
+        # Ensure that the fan is in manual mode (co;ntrolled by software, not firmware)
+        echo 1 > "$hwmon/$pwm"_enable
 
         # Read GPU temperature
         gpu_temp=$(nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader)
@@ -51,7 +59,7 @@ fan_control() {
         pwm_value=$(get_pwm_value $gpu_temp)
 
         # Write PWM value to control file
-        echo $pwm_value > $pwm_path
+        echo $pwm_value > "$hwmon/$pwm"
 
         sleep 2
     done
@@ -108,7 +116,9 @@ pwm_valid() {
 
 # Check if fan speed test mode is enabled
 hwmon() {
-    if [ "$test_mode" != "n" ]; then
+    if (( cfg == 1 )); then
+        echo "PWM device path is: $pwm"
+    elif [ "$test_mode" != "n" ]; then
         echo "What's your pwm device path?"
         echo "ex. (/sys/class/hwmon/)hwmon2/pwm2"
         read pwm
@@ -137,7 +147,6 @@ check_sudo() {
 while getopts ":c" option; do
     case $option in
         c) # Enable configurator mode
-            echo "l"
             continue;;
         \?) # Invalid option
             echo "Wrong switch, exiting..."
@@ -149,7 +158,6 @@ done
 if (( $# == 0 )); then
     check_sudo
     fan_control
-    exit 1
 fi
 
 echo "Type at any moment 'exit' and changes will be saved."
@@ -163,9 +171,15 @@ read method
 echo ""
 
 check_sudo
+if [ -f $config_var ]; then
+    source $config_var
+    cfg=1
+fi
 
 # I don't think anybody wants their config file to be in /root
-if (( sudo == 1 )); then
+if (( cfg == 1 )); then
+    echo "Home path is: $user_home"
+elif (( sudo == 1 )); then
     echo "Because you run as root, type in your non-root user home path:"
     echo "ex: /home/user"
     read user_home
@@ -219,9 +233,7 @@ while true; do
 
     echo "Enter temperature:"
     read temperature
-    if [ "$temperature" == "exit" ]; then
-        break
-    else
+    if [ "$temperature" != "exit" ]; then
         fan_good="n"
         (( steps += 1 ))
         echo ""
